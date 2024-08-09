@@ -12,6 +12,7 @@ ALLOWED_HOSTS = []
 
 
 INSTALLED_APPS = [
+    "django.contrib.humanize",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -20,6 +21,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "account",
     "shop",
+    "cart",
 ]
 
 MIDDLEWARE = [
@@ -47,6 +49,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "cart.context_processors.cart",
             ],
         },
     },
@@ -87,6 +90,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+CART_SESSION_ID = "cart"
 
 STATIC_URL = "static/"
 

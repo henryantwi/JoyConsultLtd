@@ -33,7 +33,7 @@
                         <h3 class="product-title">{{ product.name }}</h3>
                         <strong class="product-price">Ghc {{ product.price }}</strong>
 
-                        <span class="icon-cross">
+                        <span class="icon-cross plus-button" data-product-id="{{ product.id }}">
                             <img src="{% static 'images/cross.svg' %}" class="img-fluid" alt="Cross Icon">
                         </span>
                     </a>
@@ -42,4 +42,34 @@
         </div>
     </div>
 </div>
+
+<script>
+$(document).ready(function(){
+    $('.plus-button').click(function(){
+        var productId = $(this).data('product-id');
+        var productQty = 1; // Assuming you're adding 1 quantity each time
+
+        $.ajax({
+            url: "{% url 'cart:cart_add' %}",
+            type: 'POST',
+            data: {
+                productid: productId,
+                productqty: productQty,
+                csrfmiddlewaretoken: '{{ csrf_token }}',  // Ensure CSRF token is passed in the POST request
+                action: 'post'
+            },
+            success: function(response){
+                // Handle the response after successful addition
+                // Example: Update the cart quantity display
+                $('#cart-quantity').text(response.qty);
+                alert("Product added to cart successfully!");
+            },
+            error: function(xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText); // Provide error details for debugging
+                alert("An error occurred while adding the product to the cart.");
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

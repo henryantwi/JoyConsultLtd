@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load humanize %}
 {% block title %}Joy Consult - Cart{% endblock title %}
 
 {% block content %}
@@ -129,7 +130,7 @@
                   <span class="text-black">Subtotal</span>
                 </div>
                 <div class="col-md-6 text-right">
-                  <strong class="text-black">$230.00</strong>
+                  <strong class="text-black">₵{{ cart.get_subtotal_price|floatformat:2|intcomma }}</strong>
                 </div>
               </div>
               <div class="row mb-5">
@@ -137,7 +138,7 @@
                   <span class="text-black">Total</span>
                 </div>
                 <div class="col-md-6 text-right">
-                  <strong class="text-black">$230.00</strong>
+                  <strong class="text-black">₵{{ cart.get_total_price|floatformat:2|intcomma }}</strong>
                 </div>
               </div>
 
