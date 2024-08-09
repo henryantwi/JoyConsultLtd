@@ -12,5 +12,6 @@ urlpatterns = [
     path('blog/', views.blog, name='blog'),
     path('contact/', views.contact, name='contact'),
     path('cart/', views.cart, name='cart'),
-    # path('account/', views.account, name='account'),
+    path('checkout/', views.checkout, name='checkout'),
+    path('thankyou/', views.thankyou, name='thankyou'),
 ]
