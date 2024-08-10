@@ -3,6 +3,10 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
+class ProductManager(models.Manager):
+    def get_queryset(self):
+        return super(ProductManager, self).get_queryset() # .filter(is_active=True)
+
 class Product(models.Model):
     name = models.CharField(
         verbose_name=_("title"),
@@ -25,6 +29,8 @@ class Product(models.Model):
         default="images/default.png",
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    objects = models.Manager()
+    products = ProductManager()
 
     class Meta:
         ordering = ("-created_at",)

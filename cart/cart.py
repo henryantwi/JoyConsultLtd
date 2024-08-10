@@ -103,11 +103,11 @@ class Cart:
             self.cart[product_id]['qty'] = qty
         self.save()
 
-    def get_product_qty(self, product_id):
+    def get_product_qty(self, product_id) -> int:
         """
         Retrieve the quantity of a specific product in the cart
         """
         product_id = str(product_id)
         if product_id in self.cart:
-            return self.cart[product_id]['qty']
+            return int(self.cart[product_id]['qty'])
         return 0  # Return 0 if the product is not in the cart

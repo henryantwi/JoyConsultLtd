@@ -44,32 +44,73 @@
 </div>
 
 <script>
-$(document).ready(function(){
-    $('.plus-button').click(function(){
-        var productId = $(this).data('product-id');
-        var productQty = 1; // Assuming you're adding 1 quantity each time
-
-        $.ajax({
-            url: "{% url 'cart:cart_add' %}",
-            type: 'POST',
-            data: {
-                productid: productId,
-                productqty: productQty,
-                csrfmiddlewaretoken: '{{ csrf_token }}',  // Ensure CSRF token is passed in the POST request
-                action: 'post'
-            },
-            success: function(response){
-                // Handle the response after successful addition
-                // Example: Update the cart quantity display
-                $('#cart-quantity').text(response.qty);
-                alert("Product added to cart successfully!");
-            },
-            error: function(xhr, errmsg, err) {
-                console.log(xhr.status + ": " + xhr.responseText); // Provide error details for debugging
-                alert("An error occurred while adding the product to the cart.");
+    $(document).ready(function() {
+        $('.plus-button').click(function() {
+            var button = $(this);
+            var productId = button.data('product-id');
+            var productQty = 1; // Assuming you're adding 1 quantity each time
+    
+            // Check if the product is already in the cart
+            if (button.hasClass('in-cart')) {
+                // If in cart, remove the item
+                $.ajax({
+                    url: "{% url 'cart:cart_delete' %}",
+                    type: 'POST',
+                    data: {
+                        productid: productId,
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        action: 'post'
+                    },
+                    success: function(response) {
+                        // Update the cart quantity display
+                        $('#cart-qty').text(response.qty);
+    
+                        // Revert the background color and icon
+                        button.css('background-color', '');
+                        button.html('<img src="{% static 'images/cross.svg' %}" class="img-fluid" alt="Cross Icon">'); // Change back to cross icon
+    
+                        // Remove the in-cart class
+                        button.removeClass('in-cart');
+    
+                        alert("Product removed from cart successfully!");
+                    },
+                    error: function(xhr, errmsg, err) {
+                        console.log(xhr.status + ": " + xhr.responseText);
+                        alert("An error occurred while removing the product from the cart.");
+                    }
+                });
+            } else {
+                // If not in cart, add the item
+                $.ajax({
+                    url: "{% url 'cart:cart_add' %}",
+                    type: 'POST',
+                    data: {
+                        productid: productId,
+                        productqty: productQty,
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        action: 'post'
+                    },
+                    success: function(response) {
+                        // Update the cart quantity display
+                        $('#cart-qty').text(response.qty);
+    
+                        // Change the background color to green and the icon to a check mark
+                        button.css('background-color', 'green');
+                        button.html('<span class="material-icons">check</span>'); // Use Material Icons check mark
+    
+                        // Add a class to indicate that the product is in the cart
+                        button.addClass('in-cart');
+    
+                        alert("Product added to cart successfully!");
+                    },
+                    error: function(xhr, errmsg, err) {
+                        console.log(xhr.status + ": " + xhr.responseText);
+                        alert("An error occurred while adding the product to the cart.");
+                    }
+                });
             }
         });
     });
-});
+    
 </script>
 {% endblock %}
