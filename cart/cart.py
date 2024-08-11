@@ -67,7 +67,8 @@ class Cart:
         if subtotal == 0:
             shipping = Decimal(0.00)
         else:
-            shipping = Decimal(11.50)
+            # shipping = Decimal(11.50)
+            shipping = Decimal(00.00)
 
         total = subtotal + Decimal(shipping)
         ic(total)

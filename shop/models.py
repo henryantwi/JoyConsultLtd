@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 class ProductManager(models.Manager):
     def get_queryset(self):
-        return super(ProductManager, self).get_queryset() # .filter(is_active=True)
+        return super(ProductManager, self).get_queryset().filter(is_active=True)
 
 class Product(models.Model):
     name = models.CharField(
@@ -21,7 +21,9 @@ class Product(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(999.99)],
     )
     description = models.TextField()
-    stock = models.IntegerField()
+    stock = models.IntegerField(
+        validators=[MinValueValidator(0)]
+    )
     image = models.ImageField(
         verbose_name=_("image"),
         help_text=_("Upload a product image"),
@@ -29,6 +31,7 @@ class Product(models.Model):
         default="images/default.png",
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
     objects = models.Manager()
     products = ProductManager()
 

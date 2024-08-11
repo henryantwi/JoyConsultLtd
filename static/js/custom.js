@@ -23,9 +23,6 @@
 	};
 	tinyslider();
 
-	
-
-
 	var sitePlusMinus = function() {
 
 		var value,
@@ -41,33 +38,37 @@
 
 	    function init() {
 	        for (var i = 0; i < quantity.length; i++ ) {
-						createBindings(quantity[i]);
+				createBindings(quantity[i]);
 	        }
 	    };
 
 	    function increaseValue(event, quantityAmount) {
 	        value = parseInt(quantityAmount.value, 10);
-
-	        console.log(quantityAmount, quantityAmount.value);
-
 	        value = isNaN(value) ? 0 : value;
 	        value++;
 	        quantityAmount.value = value;
+
+	        // Trigger AJAX call for cart update here if necessary
+	        // updateCartQuantity(quantityAmount);
 	    }
 
 	    function decreaseValue(event, quantityAmount) {
 	        value = parseInt(quantityAmount.value, 10);
-
 	        value = isNaN(value) ? 0 : value;
-	        if (value > 0) value--;
 
-	        quantityAmount.value = value;
+	        // Prevent quantity from going below 1
+	        if (value > 1) {
+	            value--;
+	            quantityAmount.value = value;
+
+	            // Trigger AJAX call for cart update here if necessary
+	            // updateCartQuantity(quantityAmount);
+	        }
 	    }
-	    
+
 	    init();
-		
+
 	};
 	sitePlusMinus();
 
-
-})()
+})();
