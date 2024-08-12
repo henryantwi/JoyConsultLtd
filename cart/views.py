@@ -1,4 +1,5 @@
-from urllib import response
+from decimal import Decimal
+
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from icecream import ic
@@ -35,10 +36,10 @@ def cart_delete(request):
     if request.POST.get('action') == 'post':
         product_id = int(request.POST.get('productid'))
         cart.delete(product=product_id)
-        cartqty = cart.__len__()
+        cart_qty = cart.__len__()
         cart_subtotal = cart.get_subtotal_price()
         cart_total = cart.get_total_price()
-        response = JsonResponse({'qty': cartqty, 'subtotal': cart_subtotal, 'total': cart_total})
+        response = JsonResponse({'qty': cart_qty, 'subtotal': cart_subtotal, 'total': cart_total})
         return response
 
 
@@ -47,9 +48,27 @@ def cart_update(request):
     if request.POST.get('action') == 'post':
         product_id = int(request.POST.get('productid'))
         product_qty = int(request.POST.get('productqty'))
+
+        # Update the cart with the new quantity
         cart.update(product=product_id, qty=product_qty)
-        cartqty = cart.__len__()
+
+        # Calculate the product's total price
+        product_price = Decimal(Product.objects.get(id=product_id).price)  # Get product price from the database
+        product_total_price = product_price * product_qty
+
+        # Get cart details
+        cart_qty = cart.__len__()
         cart_subtotal = cart.get_subtotal_price()
         cart_total = cart.get_total_price()
-        response = JsonResponse({'qty': cartqty, 'subtotal': cart_subtotal, 'total': cart_total})
+
+        # Prepare response data
+        response_data = {
+            'qty': cart_qty,
+            'subtotal': cart_subtotal,
+            'total': cart_total,
+            'product_id': product_id,
+            'product_total_price': product_total_price
+        }
+
+        response = JsonResponse(response_data)
         return response

@@ -15,19 +15,19 @@
             </div>
           </div>
           <div class="col-lg-7">
-            
+
           </div>
         </div>
       </div>
     </div>
     <!-- End Hero Section -->
-    
+
     {% if cart|length == 0 %}
       <div class="untree_co-section">
       <div class="container">
       <div class="row">
         <div class="col-md-12 text-center pt-5">
-          
+
           <h2 class="display-3 text-black">Your Cart is Empty!</h2>
           <p class="lead mb-5">Go to shop to fill your Cart</p>
           <p><a href="{% url 'shop:shop' %}" class="btn btn-sm btn-outline-black">Back to shop</a></p>
@@ -54,7 +54,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    
+
                     {% for item in cart %}
                       {% with product=item.product %}
                         <tr>
@@ -76,9 +76,9 @@
                               </div>
                             </div>
                           </td>
-                          <td class="product-total">₵{{ item.total_price|floatformat:2|intcomma }}</td>
+                          <td class="product-total" id="product-total-{{ product.id }}">₵{{ item.total_price|floatformat:2|intcomma }}</td>
                           <td class="product-remove">
-                            <button class="btn btn-black btn-sm delete-item">X</button>
+                              <button class="btn btn-black btn-sm delete-item" data-index="{{ product.id }}">X</button>
                           </td>
                         </tr>
                       {% endwith %}
@@ -92,9 +92,9 @@
           <div class="row">
             <div class="col-md-6">
               <div class="row mb-5">
-                <div class="col-md-6 mb-3 mb-md-0">
-                  <button class="btn btn-black btn-sm btn-block">Update Cart</button>
-                </div>
+{#                <div class="col-md-6 mb-3 mb-md-0">#}
+{#                  <button class="btn btn-black btn-sm btn-block">Update Cart</button>#}
+{#                </div>#}
                 <div class="col-md-6">
                   <a href="{% url 'shop:shop' %}" class="btn btn-outline-black btn-sm btn-block">Continue Shopping</a>
                 </div>
@@ -148,7 +148,7 @@
         </div>
       </div>
     {% endif %}
- 
+
 <script>
   $(document).ready(function () {
     // Function to get CSRF token
@@ -158,9 +158,21 @@
 
     // Function to update cart display after AJAX success
     function updateCartDisplay(data) {
-    $('#cart-total').text(`₵${data.total}`);
-    $('#cart-subtotal').text(`₵${data.subtotal}`);
+    // Format numbers with commas
+    function formatNumber(number) {
+        return parseFloat(number).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    $('#cart-total').text(`₵${formatNumber(data.total)}`);
+    $('#cart-subtotal').text(`₵${formatNumber(data.subtotal)}`);
     $('#cart-qty').text(`${data.qty}`);
+    
+    let productTotalTd = $(`td[id*="product-total-${data.product_id}"]`);
+        
+    // Update the text content of the selected <td> element
+    productTotalTd.text(`₵${formatNumber(data.product_total_price)}`);
+    
+    console.log(formatNumber(data.product_total_price), data.product_id);
 
     if (data.qty === 0) {
         $('.before-footer-section').html(`
@@ -182,7 +194,7 @@
             const item = data.items ? data.items.find(item => item.product_id == productId) : null;
 
             if (item) {
-                $row.find('.product-total').text(`₵${item.total_price}`);
+                $row.find('.product-total').text(`₵${formatNumber(item.total_price)}`);
                 $row.find('.quantity-amount').val(item.qty);
             }
         });
@@ -195,6 +207,7 @@
         const $row = $(this).closest('tr');
         const productId = $row.find('.product-thumbnail').data('index');
         let qty = parseInt($row.find('.quantity-amount').val());
+        
 
         $.ajax({
             url: "{% url 'cart:cart_update' %}",
@@ -210,6 +223,29 @@
             }
         });
     });
+    
+    // Event listener for delete button
+    $(document).on('click', '.delete-item', function () {
+      const productId = $(this).data('index');
+      $.ajax({
+        url: "{% url 'cart:cart_delete' %}",
+        type: 'POST',
+        data: {
+          action: 'post',
+          productid: productId,
+          csrfmiddlewaretoken: getCSRFToken()
+        },
+        success: function (data) {
+            console.log("Hello!")
+            $('#cart-total').text(`₵${data.total}`);
+            $('#cart-subtotal').text(`₵${data.subtotal}`);
+            $('#cart-qty').text(`${data.qty}`);
+        },
+        error: function (xhr, status, error) {
+          console.error("Error deleting item:", status, error, xhr.responseText); // Debugging line
+        }
+      });
+    });
 
     // Event listener for decrease button
     $('.decrease').click(function () {
@@ -217,9 +253,9 @@
         const productId = $row.find('.product-thumbnail').data('index');
         let qty = parseInt($row.find('.quantity-amount').val());
         console.log("Before check:", qty)
-        
+
         if (qty >= 1) {
-            
+
             console.log("After check:", qty)
 
             $.ajax({
