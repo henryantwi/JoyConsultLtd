@@ -57,12 +57,13 @@
 
                     {% for item in cart %}
                       {% with product=item.product %}
+                      
                         <tr>
                           <td class="product-thumbnail" data-index="{{product.id}}">
                             <img src="{{ product.image.url }}" alt="Image" class="img-fluid">
                           </td>
                           <td class="product-name">
-                            <h2 class="h5 text-black">{{ product.name|title }}</h2>
+                            <h2 class="h5 text-black">{{ forloop.counter }} {{ product.name|title }}</h2>
                           </td>
                           <td class="product-price">₵{{ product.price|floatformat:2|intcomma }}</td>
                           <td>
@@ -236,7 +237,7 @@
           csrfmiddlewaretoken: getCSRFToken()
         },
         success: function (data) {
-            console.log("Hello!")
+            console.log("Delete Button Clicked!")
             $('#cart-total').text(`₵${data.total}`);
             $('#cart-subtotal').text(`₵${data.subtotal}`);
             $('#cart-qty').text(`${data.qty}`);
