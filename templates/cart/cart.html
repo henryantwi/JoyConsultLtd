@@ -159,16 +159,20 @@
 
     // Function to update cart display after AJAX success
     function updateCartDisplay(data) {
+      console.log("Data", data);
     // Format numbers with commas
     function formatNumber(number) {
         return parseFloat(number).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
+    // product-total-{{ product.id }}
 
     $('#cart-total').text(`₵${formatNumber(data.total)}`);
     $('#cart-subtotal').text(`₵${formatNumber(data.subtotal)}`);
     $('#cart-qty').text(`${data.qty}`);
     
     let productTotalTd = $(`td[id*="product-total-${data.product_id}"]`);
+
+    console.log(productTotalTd);
         
     // Update the text content of the selected <td> element
     productTotalTd.text(`₵${formatNumber(data.product_total_price)}`);

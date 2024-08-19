@@ -14,7 +14,6 @@ def cart_summary(request):
     context = {
         'cart': cart,
     }
-    ic(cart.get_subtotal_price())
     return render(request, 'cart/cart.html', context)
 
 
@@ -60,6 +59,8 @@ def cart_update(request):
         cart_qty = cart.__len__()
         cart_subtotal = cart.get_subtotal_price()
         cart_total = cart.get_total_price()
+        
+        ic("Product ID:", product_id)
 
         # Prepare response data
         response_data = {
