@@ -57,23 +57,24 @@
 
                     {% for item in cart %}
                       {% with product=item.product %}
-                      
-                        <tr>
+                    
+                       
+                        <tr id="{{product.id}}" class="items">
                           <td class="product-thumbnail" data-index="{{product.id}}">
                             <img src="{{ product.image.url }}" alt="Image" class="img-fluid">
                           </td>
                           <td class="product-name">
-                            <h2 class="h5 text-black">{{ forloop.counter }} {{ product.name|title }}</h2>
+                            <h2 class="h5 text-black" id="name">{{ product.name|title }}</h2>
                           </td>
                           <td class="product-price">₵{{ product.price|floatformat:2|intcomma }}</td>
                           <td>
                             <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
                               <div class="input-group-prepend">
-                                <button class="btn btn-outline-black decrease" type="button">&minus;</button>
+                                <button class="btn btn-outline-black decrease" type="button" id="ded">&minus;</button>
                               </div>
-                              <input type="text" class="form-control text-center quantity-amount" value="{{ item.qty }}" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                              <input type="text" class="form-control text-center quantity-amount" value="{{ item.qty }}" id={{product.id}} placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
                               <div class="input-group-append">
-                                <button class="btn btn-outline-black increase" type="button">&plus;</button>
+                                <button class="btn btn-outline-black increase" type="button" id="add">&plus;</button>
                               </div>
                             </div>
                           </td>
@@ -202,6 +203,52 @@
     }
 }
 
+  let cartItems = []
+
+  const addButtons = document.querySelectorAll(".items")
+ 
+  for (let i = 0; i < addButtons.length; i++) {
+    addButtons[i].addEventListener("click", function(e) {
+        let parent = e.target;
+        while (parent && !parent.classList.contains("items")) {
+            parent = parent.parentElement;
+        }
+        if (parent) {
+            const amountElement = parent.querySelector(".quantity-amount");
+            const productPriceElement = parent.querySelector(".product-price");
+            const productQuantity = amountElement ? amountElement.value : null;
+            let productPrice = productPriceElement ? productPriceElement.textContent : null;
+            const productName = parent.querySelector("#name").textContent
+            const productId = parent.id
+            if (productPrice) {
+                productPrice = parseFloat(productPrice.replace('₵', '')); // Strip off the $ sign
+                
+            }
+            
+            const clickedButton = e.target.id
+            if(clickedButton === "add"){
+
+          const isAvailable = cartItems.find((it)=> it.id == productId)   
+          if(isAvailable){
+            isAvailable.quantity = productQuantity
+          }else{
+            cartItems.push({
+              id : parseInt(productId),
+              name : productName,
+              price : parseInt(productPrice),
+              quantity : parseInt(productQuantity),
+              productTotalAmount :  parseInt(productPrice) * parseInt(productQuantity) 
+            })
+          }
+          
+        
+          
+            }
+
+            console.log(cartItems)
+        }
+    });
+}
 
     // Event listener for increase button
     $('.increase').click(function () {
