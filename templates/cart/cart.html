@@ -228,24 +228,47 @@
             const clickedButton = e.target.id
             if(clickedButton === "add"){
 
-          const isAvailable = cartItems.find((it)=> it.id == productId)   
-          if(isAvailable){
-            isAvailable.quantity = productQuantity
+          const productSelected = cartItems.find((it)=> it.id == productId)   
+          if(productSelected){
+            productSelected.quantity = parseInt(productQuantity)
+            productSelected.productTotalAmount = parseInt(productQuantity) * productSelected.price
           }else{
             cartItems.push({
               id : parseInt(productId),
               name : productName,
-              price : parseInt(productPrice),
+              price : parseFloat(productPrice),
               quantity : parseInt(productQuantity),
-              productTotalAmount :  parseInt(productPrice) * parseInt(productQuantity) 
+              productTotalAmount :  parseFloat(parseFloat(productPrice) * parseInt(productQuantity)) 
             })
           }
-          
-        
-          
-            }
-
+        }
+            // Save updated cartItems to local storage
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
             console.log(cartItems)
+
+            // Get the updated cartItems from local storage
+            const cartItemsFromLocalStorage = JSON.parse(localStorage.getItem('cartItems'));
+            // Q: How do I associaate local storage data to a specific user?
+            // A: You can use the user's ID as the key to store the cartItems in local storage
+            // Q: How do I get the user's ID?
+            // A: You can get the user's ID from the user's session data
+            // Q: How do I get the user's session data?
+            // A: You can get the user's session data from the user's session cookie
+            // Q: How do I get the user's session cookie?
+            // A: You can get the user's session cookie from the user's browser
+            // Q: Implement that for me
+            // A: I can't do that for you. You have to do it yourself
+            // Q: Why can't you do it for me?
+            // A: Because I'm a bot and I don't have access to your user's session data
+            // Q: Can you help me with that?
+            // A: Yes, I can help you with that
+            // Q: How?
+            // A: I can guide you on how to do it
+            // Q: Can you guide me on how to do it?
+            // A: Yes, I can guide you on how to do it
+            // Q: How do I do it?
+            // A: You can use the Django session framework to store the user's session data
+
         }
     });
 }
