@@ -1,6 +1,7 @@
 from decimal import Decimal
+from typing import Any
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpRequest
 from django.shortcuts import get_object_or_404, render
 from icecream import ic
 
@@ -43,8 +44,8 @@ def cart_delete(request):
         return response
 
 
-def cart_update(request):
-    cart = Cart(request)
+def cart_update(request: HttpRequest) -> JsonResponse:
+    cart: Cart = Cart(request)
     if request.POST.get('action') == 'post':
         product_id = int(request.POST.get('productid'))
         product_qty = int(request.POST.get('productqty'))
@@ -62,7 +63,7 @@ def cart_update(request):
         cart_total = cart.get_total_price()
 
         # Prepare response data
-        response_data = {
+        response_data: dict[str, Any] = {
             'qty': cart_qty,
             'subtotal': cart_subtotal,
             'total': cart_total,
