@@ -72,13 +72,13 @@
                               <div class="input-group-prepend">
                                 <button class="btn btn-outline-black decrease" type="button" id="ded">&minus;</button>
                               </div>
-                              <input type="text"  class="form-control text-center quantity-amount" value="{{ item.qty }}" id={{product.id}} placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                              <input type="text" class="form-control text-center quantity-amount" value="{{ item.qty }}" id={{product.id}} placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
                               <div class="input-group-append">
                                 <button class="btn btn-outline-black increase" type="button" id="add">&plus;</button>
                               </div>
                             </div>
                           </td>
-                          <td class="product-total" id="product-total-{{ product.id }}">₵{{ item.total_price|floatformat:2|intcomma }}</td>
+                          <td class="product-total" id="product-total-{{product.id}}">₵{{ item.total_price|floatformat:2|intcomma }}</td>
                           <td class="product-remove">
                               <button class="btn btn-black btn-sm delete-item" data-index="{{ product.id }}">X</button>
                           </td>
@@ -160,47 +160,48 @@
 
     // Function to update cart display after AJAX success
     function updateCartDisplay(data) {
-    // Format numbers with commas
-    function formatNumber(number) {
-        return parseFloat(number).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-
-    $('#cart-total').text(`₵${formatNumber(data.total)}`);
-    $('#cart-subtotal').text(`₵${formatNumber(data.subtotal)}`);
-    $('#cart-qty').text(`${data.qty}`);
+        // Format numbers with commas
+        console.log(data)
+        function formatNumber(number) {
+            return parseFloat(number).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
     
-    let productTotalTd = $(`td[id*="product-total-${data.product_id}"]`);
+        $('#cart-total').text(`₵${formatNumber(data.total)}`);
+        $('#cart-subtotal').text(`₵${formatNumber(data.subtotal)}`);
+        $('#cart-qty').text(`${data.qty}`);
+    
+    
+        let productTotalTd = $(`#product-total-${data.product_id}`);
+            
+        // Update the text content of the selected <td> element
+        productTotalTd.text(`₵${formatNumber(data.product_total_price)}`);
         
-    // Update the text content of the selected <td> element
-    productTotalTd.text(`₵${formatNumber(data.product_total_price)}`);
     
-    console.log(formatNumber(data.product_total_price), data.product_id);
-
-    if (data.qty === 0) {
-        $('.before-footer-section').html(`
-            <div class="untree_co-section">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12 text-center pt-5">
-                            <h2 class="display-3 text-black">Your Cart is Empty!</h2>
-                            <p class="lead mb-5">Go to shop to fill your Cart</p>
-                            <p><a href="{% url 'shop:shop' %}" class="btn btn-sm btn-outline-black">Back to shop</a></p>
+        if (data.qty === 0) {
+            $('.before-footer-section').html(`
+                <div class="untree_co-section">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12 text-center pt-5">
+                                <h2 class="display-3 text-black">Your Cart is Empty!</h2>
+                                <p class="lead mb-5">Go to shop to fill your Cart</p>
+                                <p><a href="{% url 'shop:shop' %}" class="btn btn-sm btn-outline-black">Back to shop</a></p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>`);
-    } else {
-        $('tr').each(function () {
-            const $row = $(this);
-            const productId = $row.find('.product-thumbnail').data('index');
-            const item = data.items ? data.items.find(item => item.product_id == productId) : null;
-
-            if (item) {
-                $row.find('.product-total').text(`₵${formatNumber(item.total_price)}`);
-                $row.find('.quantity-amount').val(item.qty);
-            }
-        });
-    }
+                </div>`);
+        } else {
+            $('tr').each(function () {
+                const $row = $(this);
+                const productId = $row.find('.product-thumbnail').data('index');
+                const item = data.items ? data.items.find(item => item.product_id == productId) : null;
+    
+                if (item) {
+                    $row.find('.product-total').text(`₵${formatNumber(item.total_price)}`);
+                    $row.find('.quantity-amount').val(item.qty);
+                }
+            });
+        }
 }
 
   let cartItems = []
@@ -244,30 +245,10 @@
         }
             // Save updated cartItems to local storage
             localStorage.setItem('cartItems', JSON.stringify(cartItems));
-            console.log(cartItems)
 
             // Get the updated cartItems from local storage
             const cartItemsFromLocalStorage = JSON.parse(localStorage.getItem('cartItems'));
-            // Q: How do I associaate local storage data to a specific user?
-            // A: You can use the user's ID as the key to store the cartItems in local storage
-            // Q: How do I get the user's ID?
-            // A: You can get the user's ID from the user's session data
-            // Q: How do I get the user's session data?
-            // A: You can get the user's session data from the user's session cookie
-            // Q: How do I get the user's session cookie?
-            // A: You can get the user's session cookie from the user's browser
-            // Q: Implement that for me
-            // A: I can't do that for you. You have to do it yourself
-            // Q: Why can't you do it for me?
-            // A: Because I'm a bot and I don't have access to your user's session data
-            // Q: Can you help me with that?
-            // A: Yes, I can help you with that
-            // Q: How?
-            // A: I can guide you on how to do it
-            // Q: Can you guide me on how to do it?
-            // A: Yes, I can guide you on how to do it
-            // Q: How do I do it?
-            // A: You can use the Django session framework to store the user's session data
+            
 
         }
     });
@@ -307,7 +288,6 @@
           csrfmiddlewaretoken: getCSRFToken()
         },
         success: function (data) {
-            console.log("Delete Button Clicked!")
             $('#cart-total').text(`₵${data.total}`);
             $('#cart-subtotal').text(`₵${data.subtotal}`);
             $('#cart-qty').text(`${data.qty}`);
@@ -326,8 +306,6 @@
         console.log("Before check:", qty)
 
         if (qty >= 1) {
-
-            console.log("After check:", qty)
 
             $.ajax({
                 url: "{% url 'cart:cart_update' %}",

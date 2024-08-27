@@ -11,6 +11,13 @@ from .cart import Cart
 
 def cart_summary(request):
     cart = Cart(request)
+    # ic(type(cart))
+    for _ in cart:
+        # ic(product := _.product)
+        # ic(product.total_price)
+        ic(_)
+        # ic(dir(_))
+
     context = {
         'cart': cart,
     }
@@ -28,6 +35,7 @@ def cart_add(request):
 
         cartqty = cart.__len__()
         response = JsonResponse({'qty': cartqty})
+        ic("Add View", response)
         return response
 
 
@@ -40,6 +48,7 @@ def cart_delete(request):
         cart_subtotal = cart.get_subtotal_price()
         cart_total = cart.get_total_price()
         response = JsonResponse({'qty': cart_qty, 'subtotal': cart_subtotal, 'total': cart_total})
+        ic("Delete View", response)
         return response
 
 
@@ -55,6 +64,7 @@ def cart_update(request):
         # Calculate the product's total price
         product_price = Decimal(Product.objects.get(id=product_id).price)  # Get product price from the database
         product_total_price = product_price * product_qty
+        ic(product_total_price)
 
         # Get cart details
         cart_qty = cart.__len__()
@@ -71,4 +81,5 @@ def cart_update(request):
         }
 
         response = JsonResponse(response_data)
+        ic("Update View", response)
         return response

@@ -9,15 +9,14 @@ class Cart:
     A base Cart class, providing some default behaviors
     that can be inherited or overridden, as necessary.
     """
-    
+
     def __init__(self, request):
         self.session = request.session
-        ic("Session:", self.session)
         cart = self.session.get(settings.CART_SESSION_ID)
         if settings.CART_SESSION_ID not in request.session:
             cart = self.session[settings.CART_SESSION_ID] = {}
         self.cart = cart
-            
+
     def add(self, product, qty):
         """
         Adding and updating the user's cart
@@ -32,9 +31,12 @@ class Cart:
                 'price': str(product.price),
                 'qty': qty,
             }
-            
+
+        # Log the price stored in the cart
+        ic(f"Product ID: {product_id}, Price added to cart: {self.cart[product_id]['price']}")
+
         self.save()
-        
+
     def __iter__(self):
         """
         Collect the product id in the session data to query the database
@@ -42,25 +44,34 @@ class Cart:
         """
         product_ids = self.cart.keys()
         products = Product.products.filter(id__in=product_ids)
-        cart = self.cart.copy()
-        
+
+        # Log product prices from the database
         for product in products:
+            ic(f"Product ID: {product.id}, Price from DB: {product.price}")
+
+        cart = self.cart.copy()
+
+        # Log prices from the cart before conversion
+        for product in products:
+            ic(f"Product ID: {product.id}, Price in cart before conversion: {cart[str(product.id)]['price']}")
             cart[str(product.id)]['product'] = product
-            
+
+        # Log prices from the cart after conversion
         for item in cart.values():
             item['price'] = Decimal(item['price'])
+            ic(f"Converted Price for Product ID: {item['product'].id}, Price: {item['price']}")
             item['total_price'] = item['price'] * item['qty']
             yield item
-        
+
     def __len__(self):
         """
         Get the cart data and count the qty of items
         """
         return sum(item['qty'] for item in self.cart.values())
-    
+
     def get_subtotal_price(self):
         return sum(Decimal(item['price']) * item['qty'] for item in self.cart.values())
-    
+
     def get_total_price(self):
         subtotal = sum(Decimal(item['price']) * item['qty'] for item in self.cart.values())
 
@@ -71,35 +82,33 @@ class Cart:
             shipping = Decimal(00.00)
 
         total = subtotal + Decimal(shipping)
-        ic(total)
         return total
-    
-    
+
     def delete(self, product):
         """
         Delete item from session data
         """
-        product_id = str(product)   
-        
+        product_id = str(product)
+
         if product_id in self.cart:
             del self.cart[product_id]
             self.save()
-               
+
     def save(self):
         self.session.modified = True
-        
+
     def clear(self):
         # Remove cart from session
         del self.session[settings.CART_SESSION_ID]
         # del self.session['skey']
         self.save()
-        
+
     def update(self, product, qty):
         """
         Update values in session data
         """
         product_id = str(product)
-        
+
         if product_id in self.cart:
             self.cart[product_id]['qty'] = qty
         self.save()
