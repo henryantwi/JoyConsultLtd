@@ -32,9 +32,6 @@ class Cart:
                 'qty': qty,
             }
 
-        # Log the price stored in the cart
-        ic(f"Product ID: {product_id}, Price added to cart: {self.cart[product_id]['price']}")
-
         self.save()
 
     def __iter__(self):
@@ -45,10 +42,6 @@ class Cart:
         product_ids = self.cart.keys()
         products = Product.products.filter(id__in=product_ids)
 
-        # Log product prices from the database
-        for product in products:
-            ic(f"Product ID: {product.id}, Price from DB: {product.price}")
-
         cart = self.cart.copy()
 
         # Log prices from the cart before conversion
@@ -56,10 +49,8 @@ class Cart:
             ic(f"Product ID: {product.id}, Price in cart before conversion: {cart[str(product.id)]['price']}")
             cart[str(product.id)]['product'] = product
 
-        # Log prices from the cart after conversion
         for item in cart.values():
             item['price'] = Decimal(item['price'])
-            ic(f"Converted Price for Product ID: {item['product'].id}, Price: {item['price']}")
             item['total_price'] = item['price'] * item['qty']
             yield item
 
