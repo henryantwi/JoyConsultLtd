@@ -1,7 +1,7 @@
 from decimal import Decimal
 from django.conf import settings
 from shop.models import Product
-from icecream import ic
+from django.http import HttpRequest
 
 
 class Cart:
@@ -10,14 +10,14 @@ class Cart:
     that can be inherited or overridden, as necessary.
     """
 
-    def __init__(self, request):
+    def __init__(self, request: HttpRequest) -> None:
         self.session = request.session
         cart = self.session.get(settings.CART_SESSION_ID)
         if settings.CART_SESSION_ID not in request.session:
             cart = self.session[settings.CART_SESSION_ID] = {}
         self.cart = cart
 
-    def add(self, product, qty):
+    def add(self, product: Product, qty: int) -> None:
         """
         Adding and updating the user's cart
         session data
@@ -44,9 +44,7 @@ class Cart:
 
         cart = self.cart.copy()
 
-        # Log prices from the cart before conversion
         for product in products:
-            ic(f"Product ID: {product.id}, Price in cart before conversion: {cart[str(product.id)]['price']}")
             cart[str(product.id)]['product'] = product
 
         for item in cart.values():
