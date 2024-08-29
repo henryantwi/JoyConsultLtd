@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load humanize %}
 {% block title %}Joy Consult - Checkout{% endblock title %}
 
 {% block content %}
@@ -226,21 +227,21 @@
 						<th>Total</th>
 						</thead>
 						<tbody>
-						<tr>
-							<td>Top Up T-Shirt <strong class="mx-2">x</strong> 1</td>
-							<td>$250.00</td>
-						</tr>
-						<tr>
-							<td>Polo Shirt <strong class="mx-2">x</strong>   1</td>
-							<td>$100.00</td>
-						</tr>
+                       {% for item in cart %}
+                         {% with product=item.product %}
+                           <tr>
+							<td>{{ product.name|title }} <strong class="mx-2">x</strong> {{ item.qty }}</td>
+							<td>₵{{ item.total_price|floatformat:2|intcomma }}</td>
+						   </tr>
+                         {% endwith %}	
+                       {% endfor %}
 						<tr>
 							<td class="text-black font-weight-bold"><strong>Cart Subtotal</strong></td>
-							<td class="text-black">$350.00</td>
+							<td class="text-black">₵{{ cart.get_subtotal_price|floatformat:2|intcomma }}</td>
 						</tr>
 						<tr>
 							<td class="text-black font-weight-bold"><strong>Order Total</strong></td>
-							<td class="text-black font-weight-bold"><strong>$350.00</strong></td>
+							<td class="text-black font-weight-bold"><strong>₵{{ cart.get_total_price|floatformat:2|intcomma }}</strong></td>
 						</tr>
 						</tbody>
 					</table>
