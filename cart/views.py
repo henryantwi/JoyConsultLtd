@@ -47,8 +47,13 @@ def cart_delete(request):
         cart_qty = cart.__len__()
         cart_subtotal = cart.get_subtotal_price()
         cart_total = cart.get_total_price()
-        response = JsonResponse({'qty': cart_qty, 'subtotal': cart_subtotal, 'total': cart_total})
-        ic("Delete View", response)
+        context = {
+            'qty': cart_qty,
+            'subtotal': cart_subtotal,
+            'total': cart_total,
+            'productId': product_id,
+        }
+        response = JsonResponse(context)
         return response
 
 

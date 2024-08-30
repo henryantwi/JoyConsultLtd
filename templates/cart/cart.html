@@ -54,11 +54,8 @@
                     </tr>
                   </thead>
                   <tbody>
-
                     {% for item in cart %}
                       {% with product=item.product %}
-                    
-                       
                         <tr id="{{product.id}}" class="items">
                           <td class="product-thumbnail" data-index="{{product.id}}">
                             <img src="{{ product.image.url }}" alt="Image" class="img-fluid">
@@ -157,11 +154,13 @@
     function getCSRFToken() {
         return $('input[name="csrfmiddlewaretoken"]').val();
     }
+    
+    
 
     // Function to update cart display after AJAX success
-    function updateCartDisplay(data) {
+    function updateCartDisplay(data, deletedProductId) {
+        
         // Format numbers with commas
-        console.log(data)
         function formatNumber(number) {
             return parseFloat(number).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
@@ -170,12 +169,10 @@
         $('#cart-subtotal').text(`₵${formatNumber(data.subtotal)}`);
         $('#cart-qty').text(`${data.qty}`);
     
-    
-        let productTotalTd = $(`#product-total-${data.product_id}`);
-            
-        // Update the text content of the selected <td> element
-        productTotalTd.text(`₵${formatNumber(data.product_total_price)}`);
-        
+        // Remove the deleted product row if it exists
+        if (deletedProductId) {
+            $(`tr[id="${deletedProductId}"]`).remove();
+        }
     
         if (data.qty === 0) {
             $('.before-footer-section').html(`
@@ -191,24 +188,28 @@
                     </div>
                 </div>`);
         } else {
-            $('tr').each(function () {
+            $('tr.items').each(function () {
                 const $row = $(this);
-                const productId = $row.find('.product-thumbnail').data('index');
-                const item = data.items ? data.items.find(item => item.product_id == productId) : null;
-    
-                if (item) {
-                    $row.find('.product-total').text(`₵${formatNumber(item.total_price)}`);
-                    $row.find('.quantity-amount').val(item.qty);
+                const productId = $row.attr('id');
+                const $quantityInput = $row.find('.quantity-amount');
+                const $totalCell = $row.find('.product-total');
+                
+                if ($quantityInput.length && $totalCell.length) {
+                    const qty = parseInt($quantityInput.val());
+                    const price = parseFloat($row.find('.product-price').text().replace('₵', ''));
+                    const total = qty * price;
+                    
+                    $totalCell.text(`₵${formatNumber(total)}`);
                 }
             });
         }
-}
+    }
 
-  let cartItems = []
+    let cartItems = []
 
-  const addButtons = document.querySelectorAll(".items")
+    const addButtons = document.querySelectorAll(".items")
  
-  for (let i = 0; i < addButtons.length; i++) {
+    for (let i = 0; i < addButtons.length; i++) {
     addButtons[i].addEventListener("click", function(e) {
         let parent = e.target;
         while (parent && !parent.classList.contains("items")) {
@@ -276,26 +277,26 @@
         });
     });
     
-    // Event listener for delete button
-    $(document).on('click', '.delete-item', function () {
-      const productId = $(this).data('index');
-      $.ajax({
-        url: "{% url 'cart:cart_delete' %}",
-        type: 'POST',
-        data: {
-          action: 'post',
-          productid: productId,
-          csrfmiddlewaretoken: getCSRFToken()
-        },
-        success: function (data) {
-            $('#cart-total').text(`₵${data.total}`);
-            $('#cart-subtotal').text(`₵${data.subtotal}`);
-            $('#cart-qty').text(`${data.qty}`);
-        },
-        error: function (xhr, status, error) {
-          console.error("Error deleting item:", status, error, xhr.responseText); // Debugging line
-        }
-      });
+     // Event listener for delete button
+    $(document).on('click', '.delete-item', function (e) {
+        e.preventDefault();
+        const $row = $(this).closest('tr');
+        const productId = $(this).data('index');
+        $.ajax({
+            url: "{% url 'cart:cart_delete' %}",
+            type: 'POST',
+            data: {
+                action: 'post',
+                productid: productId,
+                csrfmiddlewaretoken: getCSRFToken()
+            },
+            success: function (data) {
+                updateCartDisplay(data, productId);
+            },
+            error: function (xhr, status, error) {
+                console.error("Error deleting item:", status, error, xhr.responseText);
+            }
+        });
     });
 
     // Event listener for decrease button
