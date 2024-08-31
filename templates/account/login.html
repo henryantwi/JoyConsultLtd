@@ -13,34 +13,30 @@
 
 
           <div class="col-md-8 col-lg-8 pb-4">
-            <h2 class="text-black">Log in</h2>
+            <h2 class="text-black">Sign in</h2>
+              {% if messages %}
+                <div class="alert alert-danger col-6" role="alert">
+                  Email or password did not match {{ messages }}
+                </div>
+              {% endif %}
 
-            <form>
-              <div class="row">
-                <div class="col-6">
+            <form method="post">
+                {% csrf_token %}
+                <div class="col-6 mb-3">
                   <div class="form-group">
-                    <label class="text-black" for="fname">First name</label>
-                    <input type="text" class="form-control" id="fname">
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="form-group">
-                    <label class="text-black" for="lname">Last name</label>
-                    <input type="text" class="form-control" id="lname">
-                  </div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="text-black" for="email">Email address</label>
+                    <label class="text-black" for="email">Email address</label>
                 <input type="email" class="form-control" id="email">
-              </div>
+                  </div>
+                </div>
+                <div class="col-6 mb-5">
+                  <div class="form-group">
+                    <label class="text-black" for="password">Password</label>
+                    <input type="password" class="form-control" id="password">
+                  </div>
+                <label class="text-black mt-3">Don't have an account? <a href="{% url 'account:sign_up' %}">Sign Up</a></label>
+                </div>
 
-              <div class="form-group mb-5">
-                <label class="text-black" for="message">Message</label>
-                <textarea name="" class="form-control" id="message" cols="30" rows="5"></textarea>
-              </div>
-
-              <button type="submit" class="btn btn-primary-hover-outline">Send Message</button>
+              <button type="submit" class="btn btn-primary-hover-outline">Sign In</button>
             </form>
 
           </div>
@@ -52,7 +48,7 @@
     </div>
 
   </div>
-  </div>
+ 
 
 <!-- End Contact Form -->
 {% endblock content %}
