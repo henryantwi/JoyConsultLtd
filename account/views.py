@@ -6,6 +6,7 @@ from django.http import HttpRequest, HttpResponse
 def login(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         messages.error(request, "Please correct the errors below.")
+
         ...
     return render(request, "account/login.html")
 
