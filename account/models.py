@@ -38,43 +38,43 @@ class CustomAccountManager(BaseUserManager):
         return user
 
 
-class Customer(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(_("email address"), unique=True)
-    full_name = models.CharField(max_length=150)
-    mobile = models.CharField(max_length=150, blank=True)
-    is_active = models.BooleanField(default=False)
-    is_staff = models.BooleanField(default=False)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-
-    objects = CustomAccountManager()
-
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = [
-        "full_name",
-    ]
-
-    groups = models.ManyToManyField(
-        Group,
-        related_name='customer_set',
-        blank=True,
-        help_text=_("Groups this user belongs to."),
-        related_query_name='customer'
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        related_name='customer_set',
-        blank=True,
-        help_text=_("Specific permissions for this user."),
-        related_query_name='customer'
-    )
-
-    class Meta:
-        verbose_name = "Account"
-        verbose_name_plural = "Accounts"
-
-    def __str__(self):
-        return self.full_name
+# class Customer(AbstractBaseUser, PermissionsMixin):
+#     email = models.EmailField(_("email address"), unique=True)
+#     full_name = models.CharField(max_length=150)
+#     mobile = models.CharField(max_length=150, blank=True)
+#     is_active = models.BooleanField(default=False)
+#     is_staff = models.BooleanField(default=False)
+#     created = models.DateTimeField(auto_now_add=True)
+#     updated = models.DateTimeField(auto_now=True)
+#
+#     objects = CustomAccountManager()
+#
+#     USERNAME_FIELD = "email"
+#     REQUIRED_FIELDS = [
+#         "full_name",
+#     ]
+#
+#     groups = models.ManyToManyField(
+#         Group,
+#         related_name='customer_set',
+#         blank=True,
+#         help_text=_("Groups this user belongs to."),
+#         related_query_name='customer'
+#     )
+#     user_permissions = models.ManyToManyField(
+#         Permission,
+#         related_name='customer_set',
+#         blank=True,
+#         help_text=_("Specific permissions for this user."),
+#         related_query_name='customer'
+#     )
+#
+#     class Meta:
+#         verbose_name = "Account"
+#         verbose_name_plural = "Accounts"
+#
+#     def __str__(self):
+#         return self.full_name
 
 
 # class Address(models.Model):
